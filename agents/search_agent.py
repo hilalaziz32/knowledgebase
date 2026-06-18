@@ -48,17 +48,45 @@ SPECS = {
 }
 
 
-def run(stype, query, niche, status, limit):
+def route_niches(cur, qvec, top=2, min_score=0.55):
+    """Stage 1: route the query to the most relevant niche(s) by comparing it to
+    each niche_knowledge.summary_embedding. Returns [(niche, score), ...]."""
+    cur.execute(
+        """select niche, 1 - (summary_embedding <=> %s::vector) as score
+           from niche_knowledge
+           where summary_embedding is not null
+           order by summary_embedding <=> %s::vector
+           limit %s""",
+        (qvec, qvec, top),
+    )
+    rows = [(n, round(float(s), 4)) for n, s in cur.fetchall()]
+    return [r for r in rows if r[1] >= min_score] or rows  # keep best even if below cutoff
+
+
+def run(stype, query, niche, status, limit, route=False):
     if stype not in SPECS:
         raise SystemExit(f"unknown type '{stype}'. one of {sorted(SPECS)}")
     table, vec, cols, niche_col = SPECS[stype]
     qvec = embed_query(query)
 
+    routed = []
+    conn0 = None
     where = [f"{vec} is not null"]
     params = []
-    if niche and niche_col:
+
+    # Stage 1: niche routing (only when no explicit niche was given)
+    if route and not niche and niche_col:
+        conn0 = get_conn()
+        with conn0.cursor() as rc:
+            routed = route_niches(rc, qvec)
+        niches = [n for n, _ in routed]
+        if niches:
+            where.append(f"{niche_col} = ANY(%s)")
+            params.append(niches)
+    elif niche and niche_col:
         where.append(f"{niche_col} = %s")
         params.append(niche)
+
     if status and stype == "copies":
         where.append("status = %s")
         params.append(status)
@@ -71,7 +99,7 @@ def run(stype, query, niche, status, limit):
     )
     args = [qvec] + params + [qvec, limit]
 
-    conn = get_conn()
+    conn = conn0 or get_conn()
     try:
         with conn.cursor() as cur:
             cur.execute(sql, args)
@@ -94,7 +122,11 @@ def run(stype, query, niche, status, limit):
         for r in rows:
             if "score" in r and r["score"] is not None:
                 r["score"] = round(float(r["score"]), 4)
-        print(json.dumps({"type": stype, "query": query, "results": rows}, default=str))
+        print(json.dumps(
+            {"type": stype, "query": query, "routed": [{"niche": n, "score": s} for n, s in routed],
+             "results": rows},
+            default=str,
+        ))
     finally:
         conn.close()
 
@@ -106,5 +138,6 @@ if __name__ == "__main__":
     ap.add_argument("--niche", default=None)
     ap.add_argument("--status", default=None, help="copies only: winner/loser/...")
     ap.add_argument("--limit", type=int, default=10)
+    ap.add_argument("--route", action="store_true", help="route to the best niche(s) first, then search within")
     args = ap.parse_args()
-    run(args.type, args.query, args.niche, args.status, args.limit)
+    run(args.type, args.query, args.niche, args.status, args.limit, args.route)

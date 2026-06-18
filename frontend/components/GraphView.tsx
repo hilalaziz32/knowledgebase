@@ -74,7 +74,20 @@ function Network({ g, zoom }: { g: Graph; zoom: number }) {
           {g.edges.map((e, i) => {
             const a = byId(e.source), b = byId(e.target);
             if (!a || !b) return null;
-            return <line key={i} x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke="#243049" strokeWidth={e.kind === "synthesizes" ? 2 : 1} />;
+            const related = e.kind.startsWith("related");
+            return (
+              <g key={i}>
+                <line x1={a.x} y1={a.y} x2={b.x} y2={b.y}
+                  stroke={related ? "#5b8cff" : "#243049"}
+                  strokeWidth={related ? 2 : e.kind === "synthesizes" ? 2 : 1}
+                  strokeDasharray={related ? "5 4" : undefined} opacity={related ? 0.7 : 1} />
+                {related && (
+                  <text x={(a.x + b.x) / 2} y={(a.y + b.y) / 2 - 4} textAnchor="middle" fontSize={9} fill="#9db8ff">
+                    {e.kind.split(" ")[1]}
+                  </text>
+                )}
+              </g>
+            );
           })}
           {g.nodes.map((n) => {
             const p = byId(n.id); if (!p) return null;

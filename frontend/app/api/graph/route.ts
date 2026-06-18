@@ -54,6 +54,23 @@ export async function GET() {
       }
     }
 
+    // niche <-> niche similarity (embeddings): related niches link to each other.
+    // Exact keys decide "client belongs to niche"; embeddings decide "niche is like niche".
+    try {
+      const sims = await q<any>(`
+        select a.niche as a, b.niche as b,
+               round((1 - (a.summary_embedding <=> b.summary_embedding))::numeric, 3) as sim
+        from niche_knowledge a
+        join niche_knowledge b on a.niche < b.niche
+        where a.summary_embedding is not null and b.summary_embedding is not null
+          and (1 - (a.summary_embedding <=> b.summary_embedding)) >= 0.55`);
+      for (const s of sims) {
+        const aId = `niche:${s.a}`, bId = `niche:${s.b}`;
+        if (seen.has(aId) && seen.has(bId))
+          edges.push({ source: aId, target: bId, kind: `related ${s.sim}` });
+      }
+    } catch { /* no niche embeddings yet */ }
+
     const niches = nodes.filter((n) => n.type === "niche").length;
     const sharedNiches = nodes
       .filter((n) => n.type === "niche")

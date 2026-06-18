@@ -15,21 +15,23 @@ export default function SearchPanel() {
   const [type, setType] = useState("pains");
   const [query, setQuery] = useState("");
   const [niche, setNiche] = useState("");
+  const [smart, setSmart] = useState(true);
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<Result[] | null>(null);
+  const [routed, setRouted] = useState<{ niche: string; score: number }[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   async function run() {
-    setLoading(true); setError(null); setResults(null);
+    setLoading(true); setError(null); setResults(null); setRouted([]);
     try {
       const res = await fetch("/api/search", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type, query, niche: niche || undefined, limit: 12 }),
+        body: JSON.stringify({ type, query, niche: niche || undefined, route: smart && !niche, limit: 12 }),
       });
       const data = await res.json();
       if (!res.ok) setError(data.error || "search failed");
-      else setResults(data.results || []);
+      else { setResults(data.results || []); setRouted(data.routed || []); }
     } catch (e: any) {
       setError(e.message);
     } finally {
@@ -60,7 +62,21 @@ export default function SearchPanel() {
             {loading ? "Searching…" : "Search"}
           </button>
         </div>
+        <label className="mt-3 flex items-center gap-2 text-xs text-muted">
+          <input type="checkbox" checked={smart} disabled={!!niche} onChange={(e) => setSmart(e.target.checked)} />
+          Smart routing — first match the query to the most relevant niche, then search inside it
+          {niche && <span className="text-amber-300">(off: a niche is set manually)</span>}
+        </label>
       </div>
+
+      {routed.length > 0 && (
+        <div className="card mt-4 border-accent/40 py-3 text-sm">
+          <span className="text-muted">Routed to niche:</span>{" "}
+          {routed.map((r, i) => (
+            <span key={i} className="badge badge-blue mr-1">{r.niche} · {(r.score * 100).toFixed(0)}%</span>
+          ))}
+        </div>
+      )}
 
       {error && <div className="card mt-4 border-red-500/40 text-sm text-red-300">{error}</div>}
 

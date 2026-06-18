@@ -5,13 +5,14 @@ export const maxDuration = 120;
 
 export async function POST(req: Request) {
   try {
-    const { type, query, niche, status, limit } = await req.json();
+    const { type, query, niche, status, limit, route } = await req.json();
     if (!type || !query?.trim())
       return NextResponse.json({ error: "type and query are required" }, { status: 400 });
 
     const args = ["search_agent.py", "--type", type, "--query", query, "--limit", String(limit || 10)];
     if (niche) args.push("--niche", niche);
     if (status) args.push("--status", status);
+    if (route && !niche) args.push("--route");
 
     const r = await runAgent(args[0], args.slice(1), 120000);
     if (!r.ok) return NextResponse.json({ error: r.output }, { status: 500 });
