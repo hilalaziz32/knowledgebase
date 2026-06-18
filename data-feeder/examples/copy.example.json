@@ -1,0 +1,22 @@
+{
+  "origin": "scaletopia_send",
+  "client_slug": "big_leap",
+  "niche": "legal",
+  "persona": "managing partner",
+  "t1": "Quick one — noticed your firm ranks for the big PI terms but the intake page still asks for a phone call first.",
+  "t2": "We helped a similar firm turn that same page into signed cases without more ad spend. Worth a look?",
+  "lever": "Curious",
+  "pattern": "plain-english",
+  "unique_mechanism": "intercept competitor-name searches with pages that book intake",
+  "pattern_interrupt": "Quick one —",
+  "cta": "Worth a look?",
+  "relevance_type": "implicit",
+  "status": "draft",
+  "components": [
+    {"component_type": "disarmer", "item_text": "Quick one —"},
+    {"component_type": "relevance", "item_text": "noticed your firm ranks for the big PI terms but intake asks for a call first"},
+    {"component_type": "case_line", "item_text": "we helped a similar firm turn that page into signed cases"},
+    {"component_type": "unique_mechanism", "item_text": "without more ad spend"},
+    {"component_type": "cta", "item_text": "Worth a look?"}
+  ]
+}

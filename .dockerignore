@@ -1,0 +1,12 @@
+# keep secrets and big/irrelevant dirs out of the build context & image
+**/.env
+**/.env.local
+**/node_modules
+**/.next
+**/.venv
+.git
+chambermedia
+agents/clients
+**/__pycache__
+*.log
+.DS_Store

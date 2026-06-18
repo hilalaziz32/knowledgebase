@@ -1,0 +1,37 @@
+{
+  "client": {
+    "client": "Big Leap",
+    "slug": "big_leap",
+    "airtable_client_id": "recA1B2C3D4E5F6G7",
+    "offer": "SEO / organic traffic",
+    "niche": "legal",
+    "sub_niche": "personal-injury law"
+  },
+  "case_studies": [
+    {
+      "subject_brand": "Transparent Labs",
+      "after_state": "grew organic revenue 3.1x in 7 months",
+      "notable_results": "#1 for 40 buyer-intent terms",
+      "timeframe": "7 months",
+      "service": "SEO",
+      "unique_mechanism": "turned every competitor name into a page that intercepts their buyers",
+      "tier": "A",
+      "source_ref": "Big Leap Master Sheet · Tab 4 · row 12"
+    }
+  ],
+  "pains": [
+    {
+      "kind": "pain",
+      "text": "we rank fine but the traffic never turns into signed cases",
+      "persona": "managing partner",
+      "confidence": "confirmed",
+      "source": "call fathom_8842 · chunk 6"
+    },
+    {
+      "kind": "lingo",
+      "text": "signed cases",
+      "confidence": "confirmed",
+      "source": "Tab 2 row 3"
+    }
+  ]
+}

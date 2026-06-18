@@ -1,0 +1,29 @@
+# ---- secrets (NEVER commit) ----
+.env
+.env.local
+.env.*.local
+**/.env
+**/.env.local
+!**/.env.example
+
+# ---- client data / PII (confidential) ----
+chambermedia/
+agents/clients/
+**/clients/_uploads/
+
+# ---- python ----
+**/.venv/
+__pycache__/
+*.pyc
+
+# ---- node / next ----
+node_modules/
+**/node_modules/
+.next/
+**/.next/
+*.tsbuildinfo
+next-env.d.ts
+
+# ---- misc ----
+.DS_Store
+*.log

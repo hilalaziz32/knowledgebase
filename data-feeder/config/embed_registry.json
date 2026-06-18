@@ -1,0 +1,12 @@
+[
+  { "table": "call_chunks",        "vector_col": "embedding",                   "text_sql": "chunk_text" },
+  { "table": "case_studies",       "vector_col": "result_embedding",            "text_sql": "concat_ws(' ', after_state, notable_results)" },
+  { "table": "case_studies",       "vector_col": "unique_mechanism_embedding",  "text_sql": "unique_mechanism" },
+  { "table": "case_studies",       "vector_col": "niche_embedding",             "text_sql": "concat_ws(' ', niche, sub_niche)" },
+  { "table": "master_sheet_pains", "vector_col": "embedding",                   "text_sql": "item_text" },
+  { "table": "copies",             "vector_col": "full_copy_embedding",         "text_sql": "concat_ws(' ', t1, t2)" },
+  { "table": "copies",             "vector_col": "t1_embedding",                "text_sql": "t1" },
+  { "table": "copies",             "vector_col": "unique_mechanism_embedding",  "text_sql": "unique_mechanism" },
+  { "table": "copy_components",    "vector_col": "embedding",                   "text_sql": "item_text" },
+  { "table": "niche_knowledge",    "vector_col": "summary_embedding",           "text_sql": "commonalities_summary" }
+]
